@@ -2,9 +2,9 @@ name: Sprawdzanie wyłączeń PGE
 
 on:
   schedule:
-    - cron: "0 5 * * *"   # 7:00 czasu polskiego (GitHub liczy UTC -> 5:00 UTC)
-    - cron: "0 17 * * *"  # 19:00 czasu polskiego (17:00 UTC)
-  workflow_dispatch:       # pozwala też uruchomić ręcznie
+    - cron: "0 5 * * *"   # 7:00 czasu polskiego (UTC+2)
+    - cron: "0 17 * * *"  # 19:00 czasu polskiego
+  workflow_dispatch:
 
 jobs:
   check:
@@ -28,7 +28,10 @@ jobs:
         run: |
           echo "➡️ Uruchamiam main.py"
           python main.py
-        continue-on-error: true  # workflow nie zatrzyma się, nawet jeśli skrypt zwróci błąd
+        continue-on-error: true
 
-      - name: Finish
-        run: echo "✅ Workflow zakończony"
+      - name: Upload raport.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: raport-wylaczen
+          path: raport.txt
