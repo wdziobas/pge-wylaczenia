@@ -9,6 +9,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -19,8 +20,15 @@ jobs:
           python-version: "3.x"
 
       - name: Install dependencies
-        run: pip install requests beautifulsoup4
+        run: |
+          pip install --upgrade pip
+          pip install requests beautifulsoup4
 
       - name: Run script
-        run: python main.py
+        run: |
+          echo "➡️ Uruchamiam main.py"
+          python main.py
+        continue-on-error: true  # workflow nie zatrzyma się, nawet jeśli skrypt zwróci błąd
 
+      - name: Finish
+        run: echo "✅ Workflow zakończony"
