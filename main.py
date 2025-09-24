@@ -1,43 +1,21 @@
 import requests
-from bs4 import BeautifulSoup
 
-URL = "https://pgedystrybucja.pl/strefa-klienta/planowane-wylaczenia"
-ULICA = "Łużycka"
-MIASTO = "Łomianki"
+# Parametry wyszukiwania
+params = {
+    'miejscowosc': 'Łomianki',
+    'ulica': 'Łużycka'
+}
 
-def main():
-    print("➡️ Start skryptu")
-    try:
-        r = requests.get(URL, timeout=30)
-        print(f"✅ Status HTTP: {r.status_code}")
-        r.raise_for_status()
-    except Exception as e:
-        print(f"❌ Błąd pobierania strony: {e}")
-        return
+# Wysyłanie zapytania POST
+response = requests.post('https://pgedystrybucja.pl/wylaczenia/planowane-wylaczenia', data=params)
 
-    html = r.text
-    print("🔹 Początek pobranej strony (500 znaków):")
-    print(html[:500])
-    print("------ KONIEC FRAGMENTU ------")
-
-    soup = BeautifulSoup(html, "html.parser")
-
-    # diagnostyka - pokażmy nagłówki
-    headers = [h.get_text(" ", strip=True) for h in soup.find_all(["h1", "h2", "h3", "h4"])]
-    print("🔎 Nagłówki znalezione na stronie:", headers)
-
-    # właściwe szukanie wyłączeń
-    entries = soup.find_all("div")
-    found = False
-    for e in entries:
-        text = e.get_text(" ", strip=True)
-        if ULICA in text and MIASTO in text:
-            print("📢 ZNALEZIONO WYŁĄCZENIE:")
-            print(text)
-            found = True
-
-    if not found:
-        print("ℹ️ Brak planowanych wyłączeń na ul. Łużyckiej w Łomiankach.")
-
-if __name__ == "__main__":
-    main()
+if response.status_code == 200:
+    data = response.json()
+    if data['wyłączenia']:
+        print("Planowane wyłączenia:")
+        for item in data['wyłączenia']:
+            print(f"Data: {item['data']}, Godzina: {item['godzina']}")
+    else:
+        print("Brak planowanych wyłączeń.")
+else:
+    print(f"Błąd pobierania danych: {response.status_code}")
