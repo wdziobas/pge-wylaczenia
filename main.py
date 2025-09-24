@@ -1,21 +1,30 @@
 import requests
+from bs4 import BeautifulSoup
 
-# Parametry wyszukiwania
-params = {
-    'miejscowosc': 'Łomianki',
-    'ulica': 'Łużycka'
-}
+URL = "https://pgedystrybucja.pl/wylaczenia/planowane-wylaczenia"
+ULICA = "Łużycka"
+MIASTO = "Łomianki"
 
-# Wysyłanie zapytania POST
-response = requests.post('https://pgedystrybucja.pl/wylaczenia/planowane-wylaczenia', data=params)
+def main():
+    print("➡️ Start skryptu")
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get(URL, headers=headers, timeout=30)
+        print(f"✅ Status HTTP: {r.status_code}")
+        r.raise_for_status()
+    except Exception as e:
+        print(f"❌ Błąd pobierania strony: {e}")
+        return
 
-if response.status_code == 200:
-    data = response.json()
-    if data['wyłączenia']:
-        print("Planowane wyłączenia:")
-        for item in data['wyłączenia']:
-            print(f"Data: {item['data']}, Godzina: {item['godzina']}")
-    else:
-        print("Brak planowanych wyłączeń.")
-else:
-    print(f"Błąd pobierania danych: {response.status_code}")
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    # Szukanie w HTML wszystkich elementów zawierających interesującą ulicę
+    found = False
+    for tag in soup.find_all(text=True):
+        if ULICA in tag and MIASTO in tag:
+            print("📢 ZNALEZIONO WYŁĄCZENIE:")
+            print(tag.strip())
+            found = True
+
+    if not found:
+        print("ℹ️ Brak planowa
