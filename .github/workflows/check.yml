@@ -1,1 +1,26 @@
+name: Sprawdzanie wyłączeń PGE
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 7:00 czasu polskiego (GitHub liczy UTC -> 5:00 UTC)
+    - cron: "0 17 * * *"  # 19:00 czasu polskiego (17:00 UTC)
+  workflow_dispatch:       # pozwala też uruchomić ręcznie
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run script
+        run: python main.py
 
