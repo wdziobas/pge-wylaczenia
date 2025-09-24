@@ -31,7 +31,8 @@ jobs:
         continue-on-error: true
 
       - name: Upload raport.txt as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: raport-wylaczen
           path: raport.txt
+
