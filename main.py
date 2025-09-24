@@ -24,6 +24,7 @@ def main():
     soup = BeautifulSoup(r.text, "html.parser")
 
     found = False
+    # uzywamy string zamiast text, aby uniknąć DeprecationWarning
     for tag in soup.find_all(string=True):
         if ULICA in tag and MIASTO in tag:
             raport_lines.append("📢 ZNALEZIONO WYŁĄCZENIE:")
